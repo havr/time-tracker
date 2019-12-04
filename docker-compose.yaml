@@ -1,0 +1,26 @@
+version: "3"
+services:
+  app:
+    image: havr/time-tracker
+    ports:
+      - 8080:8080
+    networks:
+      - net
+    environment:
+    - TT_SERVE_AT=:8080
+    - TT_DATABASE_URL=postgres://postgres:verystr0ngpassword@postgres:5432/time_tracker?sslmode=disable
+    - TT_WAIT_FOR_DATABASE_SECONDS=5
+
+  postgres:
+    image: postgres
+    hostname: postgres
+    networks:
+    - net
+    ports:
+      - 5432:5432
+    environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=verystr0ngpassword
+    - POSTGRES_DB=time_tracker
+networks:
+  net:
