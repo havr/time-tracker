@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import texts from "constants/texts";
+
 export interface Element {
     name: string;
     title: string;
@@ -8,7 +10,7 @@ export interface Element {
 interface Props {
     current: string;
     available: Element[]
-    onChange: (string) => any;
+    onChange: (string) => void;
 }
 
 export default class WorkSessionListRange extends React.Component<Props> {
@@ -19,7 +21,7 @@ export default class WorkSessionListRange extends React.Component<Props> {
         const change = (e) => onChange(e.target.value);
         return (
               <div className="form-group row">
-                  <label className={"col-form-label"}>List by</label>
+                  <label className={"col-form-label"}> {texts.workSession.listRange.title} </label>
                   <div className={"col-sm-2"}>
                       <select className="form-control" value={current} onChange={change}>
                           {elements}

@@ -7,21 +7,21 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/havr/time-tracker/internal/api"
 	"github.com/havr/time-tracker/internal/stores"
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type Config struct {
-	DatabaseURL string `envconfig:"database_url"`
-	ServeAt     string `envconfig:"serve_at"`
-	StaticDir   string `envconfig:"static_dir"`
-	MigrateFrom string `envconfig:"migrate_from"`
-	WaitForDatabaseSeconds int `envconfig:"wait_for_database_seconds"`
+	DatabaseURL            string `envconfig:"database_url"`
+	ServeAt                string `envconfig:"serve_at"`
+	StaticDir              string `envconfig:"static_dir"`
+	MigrateFrom            string `envconfig:"migrate_from"`
+	WaitForDatabaseSeconds int    `envconfig:"wait_for_database_seconds"`
 }
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 	}
 
 	deadline := time.Now().Add(time.Duration(config.WaitForDatabaseSeconds) * time.Second)
-	for time.Now().Before(deadline){
+	for time.Now().Before(deadline) {
 		if err = db.Ping(); err == nil {
 			break
 		}
@@ -54,7 +54,7 @@ func main() {
 		}
 
 		m, err := migrate.NewWithDatabaseInstance(
-			"file:///" + config.MigrateFrom,
+			"file://"+config.MigrateFrom,
 			"postgres", driver)
 		if err != nil {
 			log.Fatal("creating migrator instance: ", err.Error())

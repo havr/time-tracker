@@ -17,8 +17,8 @@ The Makefile already contains the examples of its usage.
 
 ## How to build backend
 ```bash
-go get
-go build cmd/tracker/tracker.go
+go get ./...
+make build
 ```
 
 ## Frontend
@@ -35,9 +35,14 @@ The server serves by default on the 3333 port and proxies API calls to the backe
 ### Environment variables
 
 ```
-TT_DATABASE_URL=postgres://postgres:verystr0ngpassword@postgres:5432/time_tracker?sslmode=disable # required, postgres connection string
-TT_SERVE_AT=:8080 # host to serve everything at
-TT_STATIC_DIR=ui/build # optional, tells the app to serve the static dir
-TT_MIGRATE_FROM=./migrations # optional, specifies the directory with migrations to apply before the application starts
-TT_WAIT_FOR_DATABASE_SECONDS=5 # optional, wait the amount of seconds if the database returns errors on application start
+# required, postgres connection string
+export TT_DATABASE_URL=postgres://postgres:verystr0ngpassword@localhost:5432/time_tracker?sslmode=disable 
+# host to serve everything at
+export TT_SERVE_AT=:8080
+# optional, tells the app to serve the static dir
+export TT_STATIC_DIR=ui/build 
+# optional, specifies the directory with migrations to apply before the application starts
+export TT_MIGRATE_FROM=./migrations 
+# optional, wait the amount of seconds if the database returns errors on application start
+export TT_WAIT_FOR_DATABASE_SECONDS=5 
 ```

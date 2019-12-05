@@ -1,7 +1,10 @@
+run:
+	go build cmd/tracker/tracker.go
+
 build:
 	go build cmd/tracker/tracker.go
 
-migrate-up:
+migrate:
 	migrate -database postgres://${TT_DATABASE_URL} -source file://./migrations up
 
 migrate-up:

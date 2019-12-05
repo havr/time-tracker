@@ -10,7 +10,7 @@ interface Props {
     list: WorkSession[]
 }
 
-export default class extends React.Component<Props> {
+export default class WorkSessionList extends React.Component<Props> {
     render() {
         const { list } = this.props;
         const sessions = list.map(this.renderWorkSession);
@@ -19,9 +19,9 @@ export default class extends React.Component<Props> {
             <table className="table">
               <thead>
                 <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Duration</th>
-                  <th scope="col">Started</th>
+                  <th scope="col">{texts.workSession.fields.name}</th>
+                  <th scope="col">{texts.workSession.fields.duration}</th>
+                  <th scope="col">{texts.workSession.fields.started}</th>
                 </tr>
               </thead>
               <tbody>
@@ -33,7 +33,7 @@ export default class extends React.Component<Props> {
 
     renderWorkSession(session: WorkSession) {
         const name = session.name || <i> {texts.workSession.unnamed} </i>;
-        const startTime = moment(session.startTime).format("YYYY/MM/DD HH:mm:ss");
+        const startTime = moment(session.startTime).format("DD/MM/YYYY HH:mm:ss");
         const duration = formatInterval(session.duration);
 
         return (

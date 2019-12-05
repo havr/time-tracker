@@ -1,12 +1,12 @@
 import moment from "moment";
 
 export function formatInterval(duration) {
-    const value = moment.duration(duration);
+    const value = moment.duration(duration, 'seconds');
     return [value.hours(), value.minutes(), value.seconds()].map(padZeroes).join(":");
 }
 
 export function intervalBetween(end: Date, start: Date) {
-    return (+ end) - (+ start)
+    return Math.round(((+ end) - (+ start)) / 1000);
 }
 
 function padZeroes(value) {

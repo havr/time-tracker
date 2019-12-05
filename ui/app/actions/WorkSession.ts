@@ -20,11 +20,11 @@ export function listWorkSessions(range) {
     return (dispatch) => {
         return Api.listWorkSessions(range).then((workSessions) => {
             dispatch({
+                type: WorkSessionActionNames.LIST,
                 payload: {
                     sessions: workSessions,
                     range,
                 },
-                type: WorkSessionActionNames.LIST,
             })
         })
     }
@@ -55,7 +55,8 @@ export type SaveWorkSessionAction = {
 
 export function saveWorkSession(session: WorkSession) {
     return dispatch => {
-        return Api.saveWorkSession(session).then(() => {
+        return Api.saveWorkSession(session).then((response) => {
+            session = {...session, id: response.id};
             dispatch({
                 type: WorkSessionActionNames.SAVE,
                 payload: {

@@ -25,8 +25,18 @@ export class ApiClient {
         }
 
         return fetch(this._url + url, params)
-            .then(response => response.text())
-            .then(text => text ? JSON.parse(text) : null);
+            .then(response => {
+                return response.text().then((value) => {
+                    if (response.status < 200 || response.status >= 300) {
+                        throw `Http Error ${response.status}: ${value}`;
+                    } else {
+                        if (value) {
+                            return JSON.parse(value);
+                        }
+                        return null;
+                    }
+                })
+            });
     }
 }
 

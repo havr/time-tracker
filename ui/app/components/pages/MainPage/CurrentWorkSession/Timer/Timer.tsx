@@ -6,11 +6,7 @@ interface Props {
     start?: Date;
 }
 
-interface State {
-    formattedValue: string;
-}
-
-export default class Timer extends React.Component<Props, State> {
+export default class Timer extends React.Component<Props> {
     timer = null;
 
     constructor(props) {

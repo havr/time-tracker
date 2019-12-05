@@ -1,5 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import { ThunkDispatch } from "redux-thunk";
 
 import CurrentWorkSession from "components/pages/MainPage/CurrentWorkSession/CurrentWorkSession";
 import WorkSessionListRange from "components/pages/MainPage/WorkSessionListRange/WorkSessionListRange";
@@ -12,22 +13,23 @@ import {
 } from "actions/WorkSession";
 import WorkSession from "models/WorkSession";
 import {intervalBetween} from "util/time";
+import texts from "constants/texts";
 
 interface Props {
     currentWorkSession: WorkSession;
     workSessionList: WorkSession[];
     range: string;
 
-    onStart: (name: string) => any;
-    onList: (range: string) => any;
-    onSave: (session: WorkSession) => any;
-    onRename: (name: string, globally: boolean) => any;
+    onStart: (name: string) => void;
+    onList: (range: string) => void;
+    onSave: (session: WorkSession) => void;
+    onRename: (name: string) => void;
 }
 
 const listRanges = [
-    {name: "day", title: "Day"},
-    {name: "week", title: "Week"},
-    {name: "month", title: "Month"},
+    {name: "day", title: texts.workSession.listRange.types.day},
+    {name: "week", title: texts.workSession.listRange.types.week},
+    {name: "month", title: texts.workSession.listRange.types.month},
 ];
 
 class MainPage extends React.Component<Props> {
@@ -38,7 +40,7 @@ class MainPage extends React.Component<Props> {
     }
 
     render() {
-        const { range, onList, workSessionList, currentWorkSession } = this.props;
+        const { range, onList, onRename, workSessionList, currentWorkSession, } = this.props;
 
         return (
             <div className="container">
@@ -49,7 +51,7 @@ class MainPage extends React.Component<Props> {
                               value={currentWorkSession}
                               onStart={this.start}
                               onSave={this.save}
-                              onRename={this.rename}
+                              onRename={onRename}
                           />
                         </div>
                         <div className="mt-3">
@@ -76,12 +78,6 @@ class MainPage extends React.Component<Props> {
         const duration = intervalBetween(new Date (), currentWorkSession.startTime);
         onSave({...currentWorkSession, duration: duration});
     };
-
-    rename = (newName) => {
-        const { onRename, currentWorkSession } = this.props;
-
-        onRename(newName, !! currentWorkSession.startTime);
-    };
 }
 
 function inject({ workSession }) {
@@ -92,7 +88,7 @@ function inject({ workSession }) {
     }
 }
 
-function actions(dispatch) {
+function actions(dispatch: ThunkDispatch<{}, {}, any>) {
     return {
         onStart: () => dispatch(startWorkSession()),
         onSave: (session) => dispatch(saveWorkSession(session)),
