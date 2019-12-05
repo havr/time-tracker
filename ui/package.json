@@ -20,7 +20,8 @@
     "redux-thunk": "^2.3.0",
     "sass-brunch": "^2.10.8",
     "typescript": "^2.4",
-    "typescript-brunch": "^2.3.0"
+    "typescript-brunch": "^2.3.0",
+    "ws": "^3.3.1"
   },
   "resolutions": {
     "node-sass": "^4.12.0",
