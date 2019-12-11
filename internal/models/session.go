@@ -7,8 +7,8 @@ import (
 )
 
 type Session struct {
-	ID        uuid.UUID     `json:"id"`
-	Name      string        `json:"name"`
-	StartTime time.Time     `json:"startTime"`
-	Duration  time.Duration `json:"duration"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	StartTime time.Time `json:"startTime"`
+	Duration  int       `json:"duration"`
 }

@@ -32,6 +32,18 @@ make serve # starts a development server
 
 The server serves by default on the 3333 port and proxies API calls to the backend it expects to run on the 8080.
 
+### Integration tests
+
+I added some examples of DB integration tests how I see it in a very simple case. 
+Of course, for production there should be much complex solution that speeds the process up.
+
+```bash
+export TT_TEST_DB=postgres://test:test@localhost:5432/time_tracker_test?sslmode=disable
+docker run -d --name=tt_test_pg --tmpfs /var/lib/postgresql/data:rw -p 5432:5432 -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=time_tracker_test postgres 
+migrate -database ${TT_TEST_DB} -source file://./migrations up
+go test -v ./...
+```
+
 ### Environment variables
 
 ```

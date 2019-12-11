@@ -31,7 +31,7 @@ func (h *handler) saveSession(w http.ResponseWriter, r *http.Request) {
 		ID:        uuid.New(),
 		Name:      request.Name,
 		StartTime: request.Start,
-		Duration:  time.Duration(request.Duration) * time.Second,
+		Duration:  request.Duration,
 	}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

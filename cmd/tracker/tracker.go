@@ -30,42 +30,18 @@ func main() {
 		log.Fatal("processing logs: ", err.Error())
 	}
 
-	db, err := sql.Open("postgres", config.DatabaseURL)
+	db, err := dialDatabase(config.DatabaseURL, time.Duration(config.WaitForDatabaseSeconds)*time.Second)
 	if err != nil {
-		log.Fatal("open database: ", err.Error())
-	}
-
-	deadline := time.Now().Add(time.Duration(config.WaitForDatabaseSeconds) * time.Second)
-	for time.Now().Before(deadline) {
-		if err = db.Ping(); err == nil {
-			break
-		}
-		time.Sleep(1 * time.Second)
-	}
-
-	if err != nil {
-		log.Fatal("ping database: ", err.Error())
-	}
-
-	if config.MigrateFrom != "" {
-		driver, err := postgres.WithInstance(db, &postgres.Config{})
-		if err != nil {
-			log.Fatal("creating postgres migrator driver: ", err.Error())
-		}
-
-		m, err := migrate.NewWithDatabaseInstance(
-			"file://"+config.MigrateFrom,
-			"postgres", driver)
-		if err != nil {
-			log.Fatal("creating migrator instance: ", err.Error())
-		}
-
-		if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-			log.Fatal("applying migrations: ", err.Error())
-		}
+		log.Fatal(err.Error())
 	}
 
 	defer db.Close()
+
+	if config.MigrateFrom != "" {
+		if err := applyMigrations(db, config.MigrateFrom); err != nil {
+			log.Fatal(err.Error())
+		}
+	}
 
 	sessionStore := stores.NewDatabaseSessionStore(db)
 	handler := api.NewRouter(config.StaticDir, sessionStore)
@@ -74,9 +50,50 @@ func main() {
 		Handler: handler,
 	}
 
-	fmt.Printf("serving on %s\n", config.ServeAt)
+	fmt.Printf("Serving on %s\n", config.ServeAt)
 
 	if err := server.ListenAndServe(); err != nil {
 		fmt.Println(err)
 	}
+}
+
+func applyMigrations(db *sql.DB, src string) error {
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return fmt.Errorf("creating postgres migrator driver: %s", err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://"+src,
+		"postgres", driver)
+	if err != nil {
+		return fmt.Errorf("creating migrator instance: %s", err)
+	}
+
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("applying migrations: %s", err)
+	}
+
+	return nil
+}
+
+func dialDatabase(url string, waitInterval time.Duration) (*sql.DB, error) {
+	db, err := sql.Open("postgres", url)
+	if err != nil {
+		return nil, fmt.Errorf("open database: %s", err.Error())
+	}
+
+	deadline := time.Now().Add(time.Duration(waitInterval) * time.Second)
+	for time.Now().Before(deadline) {
+		if err = db.Ping(); err == nil {
+			break
+		}
+		time.Sleep(1 * time.Second)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("ping database: %s", err.Error())
+	}
+
+	return db, nil
 }

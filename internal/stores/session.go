@@ -31,7 +31,7 @@ func (s *DatabaseSessionStore) SaveSession(session *models.Session) error {
 		session.ID,
 		session.Name,
 		session.StartTime,
-		session.Duration.Seconds(),
+		session.Duration,
 	)
 	if err != nil {
 		return fmt.Errorf("save session: %s", err)
